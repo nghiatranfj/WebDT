@@ -7,7 +7,7 @@ using WebD_T.Areas.DAL;
 namespace WebD_T.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "admin")]
     public class CategoryAdminController : Controller
     {
         CategoryAdminDAL categoryAdminDAL = new CategoryAdminDAL();

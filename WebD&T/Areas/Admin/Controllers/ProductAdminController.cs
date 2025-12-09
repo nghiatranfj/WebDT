@@ -10,7 +10,7 @@ using WebD_T.Helper;
 namespace WebD_T.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "admin")]
     public class ProductAdminController : Controller
     {
         ProductAdminDAL productDAL = new ProductAdminDAL();

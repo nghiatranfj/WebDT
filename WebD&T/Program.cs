@@ -6,10 +6,10 @@ var builder = WebApplication.CreateBuilder(args);
 // MVC
 builder.Services.AddControllersWithViews();
 
-// Đăng ký DAL vào DI Container
-builder.Services.AddScoped<CustomerDAL>();
+// Đăng ký DAL dùng bảng users
+builder.Services.AddScoped<UserDAL>();
 
-// Authentication
+// Authentication (Cookie)
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
@@ -27,17 +27,18 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseAuthentication();
-app.UseAuthorization();
+app.UseAuthentication();   // <-- bắt buộc phải có
+app.UseAuthorization();    // <-- bắt buộc phải có
 
 // Admin Area
 app.MapControllerRoute(
     name: "areas",
     pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
 
-// Default Route
+// Route mặc định
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
+// Chạy ứng dụng
 app.Run();
