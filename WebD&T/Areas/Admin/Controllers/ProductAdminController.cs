@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using WebD_T.Areas.Admin.DAL;
@@ -9,6 +10,7 @@ using WebD_T.Helper;
 namespace WebD_T.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = "Admin")]
     public class ProductAdminController : Controller
     {
         ProductAdminDAL productDAL = new ProductAdminDAL();

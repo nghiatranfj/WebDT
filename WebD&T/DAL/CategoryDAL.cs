@@ -1,45 +1,56 @@
 ﻿using Microsoft.Data.SqlClient;
-using WebDT.Models;
 using WebDT.Database;
+using WebDT.Models;
 
 namespace WebDT.DAL
 {
     public class CategoryDAL
     {
-        DbConnect connect = new DbConnect();
-        public List<CategoryMenu> getAllWithCount()
+        private readonly DbConnect connect = new DbConnect();
+
+        // Lấy danh sách Category + số lượng sản phẩm trong từng Category
+        public List<CategoryMenu> GetAllWithCount()
         {
             connect.openConnection();
-            List<CategoryMenu> list = new List<CategoryMenu>();
+            var list = new List<CategoryMenu>();
+
             using (SqlCommand command = new SqlCommand())
             {
                 command.Connection = connect.getConnecttion();
                 command.CommandType = System.Data.CommandType.Text;
-                string query = @"select c.id, c.name, c.description, count(p.id) as
-                        soluong
-                         from categories c left join products p
-                        on c.id = p.category_id
-                        group by c.name,c.title, c.description
-                        order by soluong desc
-                        ";
+
+                string query = @"
+                    SELECT 
+                        c.id,
+                        c.name,
+                        c.description,
+                        COUNT(p.id) AS TotalProduct
+                    FROM categories c
+                    LEFT JOIN products p ON c.id = p.category_id
+                    GROUP BY c.id, c.name, c.description
+                    ORDER BY TotalProduct DESC";
+
                 command.CommandText = query;
-                SqlDataReader reader = command.ExecuteReader();
-                while (reader.Read())
+
+                using (SqlDataReader reader = command.ExecuteReader())
                 {
-                    CategoryMenu category = new CategoryMenu()
+                    while (reader.Read())
                     {
-                        Id = Convert.ToInt32(reader["Id"]),
-                        Name = reader["Name"].ToString() ?? "",
-                        Description = reader["description"].ToString() ?? "",
-                        Count = Convert.ToInt32(reader["soluong"].ToString())
-                    };
-                    list.Add(category);
+                        var category = new CategoryMenu
+                        {
+                            Id = Convert.ToInt32(reader["id"]),
+                            Name = reader["name"]?.ToString() ?? string.Empty,
+                            Description = reader["description"]?.ToString() ?? string.Empty,
+                            Count = Convert.ToInt32(reader["TotalProduct"])
+                        };
+
+                        list.Add(category);
+                    }
                 }
             }
+
             connect.closeConnection();
             return list;
         }
-
     }
-
 }

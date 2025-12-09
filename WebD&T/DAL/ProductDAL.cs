@@ -414,5 +414,63 @@ namespace WebDT.DAL
             connect.closeConnection();
             return total;
         }
+
+        public List<Product> GetRelatedProducts(int productId, int limit)
+        {
+            connect.openConnection();
+            var list = new List<Product>();
+
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.Connection = connect.getConnecttion();
+                command.CommandType = System.Data.CommandType.Text;
+
+                string query = @"
+                    SELECT TOP (@Limit)
+                        p.id AS Id,
+                        p.category_id AS CategoryId,
+                        p.name AS Name,
+                        p.description AS Description,
+                        p.price AS Price,
+                        p.stock_quantity AS Stock_quantity,
+                        p.image_url AS Image_url,
+                        p.is_active AS Is_active,
+                        p.created_at AS Created_at
+                    FROM products p
+                    INNER JOIN products currentP ON currentP.category_id = p.category_id
+                    WHERE currentP.id = @ProductId
+                      AND p.id <> @ProductId
+                      AND p.is_active = 1
+                    ORDER BY p.created_at DESC;";
+
+                command.CommandText = query;
+                command.Parameters.AddWithValue("@ProductId", productId);
+                command.Parameters.AddWithValue("@Limit", limit);
+
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var product = new Product
+                        {
+                            Id = Convert.ToInt32(reader["Id"]),
+                            CategoryId = Convert.ToInt32(reader["CategoryId"]),
+                            Name = reader["Name"]?.ToString() ?? string.Empty,
+                            Description = reader["Description"]?.ToString() ?? string.Empty,
+                            Price = Convert.ToInt32(reader["Price"]),
+                            Stock_quantity = Convert.ToInt32(reader["Stock_quantity"]),
+                            Image_url = reader["Image_url"]?.ToString() ?? string.Empty,
+                            Is_active = Convert.ToBoolean(reader["Is_active"]),
+                            Created_at = DateTime.Parse(reader["Created_at"]?.ToString() ?? DateTime.Now.ToString())
+                        };
+
+                        list.Add(product);
+                    }
+                }
+            }
+
+            connect.closeConnection();
+            return list;
+        }
     }
 }

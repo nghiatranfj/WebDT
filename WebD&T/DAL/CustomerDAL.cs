@@ -10,9 +10,9 @@ namespace WebD_T.DAL
     {
         private readonly DbConnect connect = new DbConnect();
 
-        // ==============================
-        // 1. Lấy thông tin Customer theo Id
-        // ==============================
+        // ==========================================================
+        // 1. LẤY THÔNG TIN CUSTOMER THEO ID
+        // ==========================================================
         public Customer? GetCustomerById(int id)
         {
             connect.openConnection();
@@ -25,51 +25,15 @@ namespace WebD_T.DAL
                 command.CommandType = CommandType.Text;
 
                 string query = @"SELECT * FROM customer WHERE id = @Id";
-
                 command.CommandText = query;
+
                 command.Parameters.AddWithValue("@Id", id);
 
                 using (SqlDataReader reader = command.ExecuteReader())
                 {
                     if (reader.Read())
                     {
-                        customer = new Customer
-                        {
-                            Id = Convert.ToInt32(reader["Id"]),
-                            LastName = reader["LastName"]?.ToString() ?? string.Empty,
-                            FirstName = reader["FirstName"]?.ToString() ?? string.Empty,
-                            Address = reader["Address"]?.ToString() ?? string.Empty,
-                            Email = reader["Email"]?.ToString() ?? string.Empty,
-                            Phone = reader["Phone"]?.ToString() ?? string.Empty,
-
-                            DateOfBirth = reader["DateOfBirth"] == DBNull.Value
-                                ? (DateTime?)null
-                                : Convert.ToDateTime(reader["DateOfBirth"]),
-
-                            Img = reader["Img"] == DBNull.Value
-                                ? null
-                                : reader["Img"]?.ToString(),
-
-                            Password = reader["Password"]?.ToString() ?? string.Empty,
-                            RandomKey = reader["RandomKey"] == DBNull.Value
-                                ? null
-                                : reader["RandomKey"]?.ToString(),
-
-                            IsActive = reader["IsActive"] != DBNull.Value
-                                && Convert.ToBoolean(reader["IsActive"]),
-
-                            Role = reader["Role"] != DBNull.Value
-                                ? Convert.ToInt32(reader["Role"])
-                                : 0,
-
-                            RegisterAt = reader["RegisterAt"] != DBNull.Value
-                                ? Convert.ToDateTime(reader["RegisterAt"])
-                                : DateTime.MinValue,
-
-                            UpdateAt = reader["UpdateAt"] != DBNull.Value
-                                ? Convert.ToDateTime(reader["UpdateAt"])
-                                : DateTime.MinValue
-                        };
+                        customer = MapReaderToCustomer(reader);
                     }
                 }
             }
@@ -78,13 +42,89 @@ namespace WebD_T.DAL
             return customer;
         }
 
-        // ==============================
-        // 2. Cập nhật thông tin chi tiết Customer
-        // ==============================
-        public bool UpdateDetailCustomer(Customer customerUpdate, int id)
+        // ==========================================================
+        // 2. LẤY CUSTOMER THEO EMAIL (dùng để LOGIN)
+        // ==========================================================
+        public Customer? GetCustomerByEmail(string email)
         {
             connect.openConnection();
 
+            Customer? customer = null;
+
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.Connection = connect.getConnecttion();
+                command.CommandType = CommandType.Text;
+                command.CommandText = @"SELECT * FROM customer WHERE email = @Email";
+
+                command.Parameters.AddWithValue("@Email", email);
+
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        customer = MapReaderToCustomer(reader);
+                    }
+                }
+            }
+
+            connect.closeConnection();
+            return customer;
+        }
+
+        // ==========================================================
+        // 3. ĐĂNG KÝ CUSTOMER MỚI
+        // ==========================================================
+        public bool CreateCustomer(Customer customer)
+        {
+            connect.openConnection();
+            int isSuccess = 0;
+
+            using (SqlCommand cmd = new SqlCommand())
+            {
+                cmd.Connection = connect.getConnecttion();
+                cmd.CommandType = CommandType.Text;
+
+                string query = @"
+                    INSERT INTO customer
+                    (lastName, firstName, email, phone, address, img,
+                     password, randomKey, isActive, role, registerAt, updateAt)
+                    VALUES
+                    (@LastName, @FirstName, @Email, @Phone, @Address, @Img,
+                     @Password, @RandomKey, @IsActive, @Role, @RegisterAt, @UpdateAt)
+                ";
+
+                cmd.CommandText = query;
+
+                cmd.Parameters.AddWithValue("@LastName", customer.LastName);
+                cmd.Parameters.AddWithValue("@FirstName", customer.FirstName);
+                cmd.Parameters.AddWithValue("@Email", customer.Email);
+                cmd.Parameters.AddWithValue("@Phone", (object?)customer.Phone ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@Address", (object?)customer.Address ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@Img", (object?)customer.Img ?? DBNull.Value);
+
+                cmd.Parameters.AddWithValue("@Password", customer.Password);
+                cmd.Parameters.AddWithValue("@RandomKey", customer.RandomKey ?? string.Empty);
+
+                cmd.Parameters.AddWithValue("@IsActive", customer.IsActive);
+                cmd.Parameters.AddWithValue("@Role", customer.Role);
+
+                cmd.Parameters.AddWithValue("@RegisterAt", customer.RegisterAt == default ? DateTime.Now : customer.RegisterAt);
+                cmd.Parameters.AddWithValue("@UpdateAt", customer.UpdateAt == default ? DateTime.Now : customer.UpdateAt);
+
+                isSuccess = cmd.ExecuteNonQuery();
+            }
+
+            connect.closeConnection();
+            return isSuccess > 0;
+        }
+
+        // ==========================================================
+        // 4. CẬP NHẬT THÔNG TIN CUSTOMER
+        // ==========================================================
+        public bool UpdateDetailCustomer(Customer customerUpdate, int id)
+        {
+            connect.openConnection();
             int isSuccess = 0;
 
             using (SqlCommand command = new SqlCommand())
@@ -108,38 +148,123 @@ namespace WebD_T.DAL
 
                 command.CommandText = query;
 
-                // Auto set UpdateAt nếu bạn chưa set từ ngoài
-                if (customerUpdate.UpdateAt == default)
-                {
-                    customerUpdate.UpdateAt = DateTime.Now;
-                }
-
                 command.Parameters.AddWithValue("@Id", id);
                 command.Parameters.AddWithValue("@LastName", customerUpdate.LastName);
                 command.Parameters.AddWithValue("@FirstName", customerUpdate.FirstName);
                 command.Parameters.AddWithValue("@Email", customerUpdate.Email);
-                command.Parameters.AddWithValue("@Phone", customerUpdate.Phone ?? string.Empty);
-                command.Parameters.AddWithValue("@Address", customerUpdate.Address);
+                command.Parameters.AddWithValue("@Phone", (object?)customerUpdate.Phone ?? DBNull.Value);
+                command.Parameters.AddWithValue("@Address", (object?)customerUpdate.Address ?? DBNull.Value);
 
-                // Img nullable
+                // Ảnh
                 if (string.IsNullOrEmpty(customerUpdate.Img))
                     command.Parameters.AddWithValue("@Img", DBNull.Value);
                 else
                     command.Parameters.AddWithValue("@Img", customerUpdate.Img);
 
-                // DateOfBirth nullable
+                // Ngày sinh
                 if (customerUpdate.DateOfBirth.HasValue)
                     command.Parameters.AddWithValue("@DateOfBirth", customerUpdate.DateOfBirth.Value);
                 else
                     command.Parameters.AddWithValue("@DateOfBirth", DBNull.Value);
 
-                command.Parameters.AddWithValue("@UpdateAt", customerUpdate.UpdateAt);
+                // UpdateAt
+                command.Parameters.AddWithValue("@UpdateAt", DateTime.Now);
 
                 isSuccess = command.ExecuteNonQuery();
             }
 
             connect.closeConnection();
             return isSuccess > 0;
+        }
+
+
+        // ==========================================================
+        // ============ HÀM MAP DATAREADER → CUSTOMER ===============
+        // ==========================================================
+        private Customer MapReaderToCustomer(SqlDataReader reader)
+        {
+            return new Customer
+            {
+                Id = Convert.ToInt32(reader["Id"]),
+                LastName = reader["LastName"]?.ToString() ?? "",
+                FirstName = reader["FirstName"]?.ToString() ?? "",
+                Address = reader["Address"]?.ToString() ?? "",
+                Email = reader["Email"]?.ToString() ?? "",
+                Phone = reader["Phone"]?.ToString() ?? "",
+
+                DateOfBirth = reader["DateOfBirth"] == DBNull.Value
+                    ? null
+                    : Convert.ToDateTime(reader["DateOfBirth"]),
+
+                Img = reader["Img"] == DBNull.Value
+                    ? null
+                    : reader["Img"]?.ToString(),
+
+                Password = reader["Password"]?.ToString() ?? "",
+                RandomKey = reader["RandomKey"] == DBNull.Value
+                    ? null
+                    : reader["RandomKey"]?.ToString(),
+
+                IsActive = reader["IsActive"] != DBNull.Value
+                    && Convert.ToBoolean(reader["IsActive"]),
+
+                Role = reader["Role"] != DBNull.Value
+                    ? Convert.ToInt32(reader["Role"])
+                    : 0,
+
+                RegisterAt = reader["RegisterAt"] != DBNull.Value
+                    ? Convert.ToDateTime(reader["RegisterAt"])
+                    : DateTime.MinValue,
+
+                UpdateAt = reader["UpdateAt"] != DBNull.Value
+                    ? Convert.ToDateTime(reader["UpdateAt"])
+                    : DateTime.MinValue
+            };
+        }
+
+        public bool SignUp(Customer customer)
+        {
+            connect.openConnection();
+            int rows = 0;
+
+            using (SqlCommand cmd = new SqlCommand())
+            {
+                cmd.Connection = connect.getConnecttion();
+                cmd.CommandType = CommandType.Text;
+
+                cmd.CommandText = @"
+            INSERT INTO customer
+            (lastName, firstName, email, phone, address, img,
+             password, randomKey, isActive, role, registerAt, updateAt)
+            VALUES
+            (@LastName, @FirstName, @Email, @Phone, @Address, @Img,
+             @Password, @RandomKey, @IsActive, @Role, @RegisterAt, @UpdateAt)
+        ";
+
+                cmd.Parameters.AddWithValue("@LastName", customer.LastName);
+                cmd.Parameters.AddWithValue("@FirstName", customer.FirstName);
+                cmd.Parameters.AddWithValue("@Email", customer.Email);
+                cmd.Parameters.AddWithValue("@Phone", (object?)customer.Phone ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@Address", (object?)customer.Address ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@Img", (object?)customer.Img ?? DBNull.Value);
+
+                cmd.Parameters.AddWithValue("@Password", customer.Password);
+                cmd.Parameters.AddWithValue("@RandomKey", customer.RandomKey ?? "");
+
+                cmd.Parameters.AddWithValue("@IsActive", customer.IsActive);
+                cmd.Parameters.AddWithValue("@Role", customer.Role);
+
+                cmd.Parameters.AddWithValue("@RegisterAt",
+                    customer.RegisterAt == default ? DateTime.Now : customer.RegisterAt);
+
+                cmd.Parameters.AddWithValue("@UpdateAt",
+                    customer.UpdateAt == default ? DateTime.Now : customer.UpdateAt);
+
+                rows = cmd.ExecuteNonQuery();
+            }
+
+            connect.closeConnection();
+            return rows > 0;
         }
     }
 }

@@ -6,14 +6,12 @@ namespace WebD_T.ViewComponents
 {
     public class MenuCategoryViewComponent : ViewComponent
     {
-        // query SQL 
-        CategoryDAL categoryDAL = new CategoryDAL();
-        public IViewComponentResult Invoke()
-        { 
-            List<CategoryMenu> categoryMenus = new List<CategoryMenu>();
+        private readonly CategoryDAL _categoryDal = new CategoryDAL();
 
-            categoryMenus = categoryDAL.getAllWithCount(); 
-            return View("Default", categoryMenus);
+        public IViewComponentResult Invoke()
+        {
+            List<CategoryMenu> categoryMenus = _categoryDal.GetAllWithCount();
+            return View("Default", categoryMenus);   // View: Views/Shared/Components/MenuCategory/Default.cshtml
         }
     }
 }

@@ -1,0 +1,26 @@
+﻿@{
+    ViewData["Title"] = "Đăng nhập";
+}
+
+<h2>Đăng nhập</h2>
+
+@if (TempData["Error"] != null)
+{
+    <div style="color:red">@TempData["Error"]</div>
+}
+
+<form method="post">
+    <label>Email</label>
+    <br />
+    <input type="text" name="email" />
+
+    <br /><br />
+
+    <label>Mật khẩu</label>
+    <br />
+    <input type="password" name="password" />
+
+    <br /><br />
+
+    <button type="submit">Đăng nhập</button>
+</form>

@@ -1,0 +1,49 @@
+﻿@{
+    ViewData["Title"] = "Đăng ký";
+}
+
+<h2>Đăng ký</h2>
+
+@if (TempData["Error"] != null)
+{
+    <div style="color:red">@TempData["Error"]</div>
+}
+@if (TempData["Success"] != null)
+{
+    <div style="color:green">@TempData["Success"]</div>
+}
+
+<form method="post" enctype="multipart/form-data">
+
+    <label>Họ</label>
+    <br />
+    <input type="text" name="LastName" />
+
+    <br /><br />
+
+    <label>Tên</label>
+    <br />
+    <input type="text" name="FirstName" />
+
+    <br /><br />
+
+    <label>Email</label>
+    <br />
+    <input type="email" name="Email" />
+
+    <br /><br />
+
+    <label>Mật khẩu</label>
+    <br />
+    <input type="password" name="Password" />
+
+    <br /><br />
+
+    <label>Nhập lại mật khẩu</label>
+    <br />
+    <input type="password" name="ConfirmPassword" />
+
+    <br /><br />
+
+    <button type="submit">Đăng ký</button>
+</form>
