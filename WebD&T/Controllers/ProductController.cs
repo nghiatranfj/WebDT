@@ -10,28 +10,21 @@ namespace WebD_T.Controllers
 
         public IActionResult Index(int? categoryId, int page = 1, string sortOrder = "")
         {
-            // Lấy URL hiện tại
             var currentUrl = HttpContext.Request.Path + HttpContext.Request.QueryString;
             ViewData["CurrentUrl"] = currentUrl;
 
-            // Số lượng sản phẩm trên mỗi trang
             int pageSize = 6;
 
-            // Lưu Id Category và sort order
             ViewData["CategoryId"] = categoryId;
             ViewData["SortColumn"] = sortOrder;
 
-            // Lấy danh sách sản phẩm sau khi phân trang
             List<Product> products = _productDAL.GetProducts_Pagination(categoryId, page, pageSize, sortOrder);
 
-            // Lấy tổng số lượng sản phẩm
             int rowCount = _productDAL.GetTotalProducts(categoryId);
 
-            // Tính số lượng trang
             double pageCount = (double)rowCount / pageSize;
             int maxPage = (int)Math.Ceiling(pageCount);
 
-            // Tạo model để hiển thị
             ProductPagination model = new ProductPagination
             {
                 Products = products,

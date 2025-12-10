@@ -19,7 +19,6 @@ namespace WebD_T.Areas.DAL
                 command.Connection = connect.getConnecttion();
                 command.CommandType = System.Data.CommandType.Text;
 
-                // Bảng đúng theo script SQL: categories
                 string query = @"SELECT id, name, description FROM categories";
 
                 command.CommandText = query;
@@ -54,14 +53,13 @@ namespace WebD_T.Areas.DAL
                 command.Connection = connect.getConnecttion();
                 command.CommandType = System.Data.CommandType.Text;
 
-                // Bảng đúng: categories, cột: name, description
                 string query = @"INSERT INTO categories(name, description)
                          VALUES(@name, @description);";
 
                 command.CommandText = query;
 
                 command.Parameters.AddWithValue("@name", categoryAdd.Name);
-                // Nếu Description null thì đẩy lên DB là NULL
+                
                 command.Parameters.AddWithValue("@description",
                     string.IsNullOrEmpty(categoryAdd.Description)
                         ? DBNull.Value
@@ -87,14 +85,12 @@ namespace WebD_T.Areas.DAL
                 command.Connection = connect.getConnecttion();
                 command.CommandType = System.Data.CommandType.Text;
 
-                // Dùng bảng đúng: categories
                 string query = @"SELECT id, name, description 
                          FROM categories 
                          WHERE id = @id";
 
                 command.CommandText = query;
 
-                // Tránh SQL Injection — dùng parameter
                 command.Parameters.AddWithValue("@id", id);
 
                 SqlDataReader reader = command.ExecuteReader();
@@ -133,7 +129,6 @@ namespace WebD_T.Areas.DAL
                 command.Parameters.AddWithValue("@id", id);
                 command.Parameters.AddWithValue("@name", categoryUpdate.Name);
 
-                // Cho phép mô tả null
                 if (string.IsNullOrEmpty(categoryUpdate.Description))
                     command.Parameters.AddWithValue("@description", DBNull.Value);
                 else
@@ -159,7 +154,6 @@ namespace WebD_T.Areas.DAL
                 command.Connection = connect.getConnecttion();
                 command.CommandType = System.Data.CommandType.Text;
 
-                // Sửa đúng tên bảng
                 string query = @"DELETE FROM categories WHERE id = @id;";
 
                 command.CommandText = query;

@@ -17,6 +17,50 @@ namespace WebD_T.Controllers
             _userDal = userDal;
         }
 
+        [Authorize]
+        public IActionResult Profile()
+        {
+            string username = User.Identity?.Name ?? "";
+
+            var user = _userDal.GetUserByUsername(username);
+            if (user == null)
+            {
+                TempData["ErrorMessage"] = "Không tìm thấy tài khoản.";
+                return RedirectToAction("Login");
+            }
+
+            return View(user);
+        }
+
+        [Authorize]
+        [HttpPost]
+        public IActionResult Profile(User model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            var oldUser = _userDal.GetUserById(model.Id);
+            if (oldUser == null)
+            {
+                TempData["ErrorMessage"] = "Không tìm thấy tài khoản.";
+                return RedirectToAction("Login");
+            }
+
+            oldUser.FullName = model.FullName;
+            oldUser.Email = model.Email;
+            oldUser.PhoneNumber = model.PhoneNumber;
+
+            bool ok = _userDal.UpdateProfile(oldUser);
+
+            if (ok)
+                TempData["SuccessMessage"] = "Cập nhật thông tin thành công!";
+            else
+                TempData["ErrorMessage"] = "Cập nhật thất bại.";
+
+            return View(oldUser);
+        }
+
+
         [HttpGet]
         public IActionResult Login() => View();
 
@@ -31,7 +75,7 @@ namespace WebD_T.Controllers
                 return View();
             }
 
-            if (user.Password != password)   // So sánh plain text
+            if (user.Password != password)   
             {
                 TempData["Error"] = "Sai mật khẩu!";
                 return View();
@@ -71,10 +115,18 @@ namespace WebD_T.Controllers
             return View(model);
         }
 
+        [HttpGet]
         public async Task<IActionResult> Logout()
         {
-            await HttpContext.SignOutAsync();
-            return RedirectToAction("Login");
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+            return RedirectToAction("Login", "Account");
         }
+
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
+
     }
 }

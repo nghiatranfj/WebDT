@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.Data.SqlClient;
 using WebD_T.Areas.Admin.Models;
-using WebDT.Database; // DbConnect nằm ở đây
+using WebDT.Database; 
 
 namespace WebD_T.Areas.Admin.DAL
 {

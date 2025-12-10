@@ -14,7 +14,6 @@
     <link rel="stylesheet" href="~/WebD_T.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" />
 
-    <!-- Favicon -->
     <link rel="icon" type="image/png" href="~/Images/Logo_Bg/logo trang.png" />
 
     <style>
@@ -159,16 +158,27 @@
 
             <div class="menu-title mt-3">Chức năng khác</div>
             <nav class="nav flex-column mb-2">
-                <a class="nav-link" href="#"><i class="bi bi-bag-check"></i> Quản lý đơn hàng</a>
+                <li class="nav-item">
+                    <a class="nav-link" asp-area="Admin" asp-controller="UserAdmin" asp-action="Index">
+                        <i class="bi bi-people"></i> Quản lý tài khoản
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" asp-area="Admin" asp-controller="OrderAdmin" asp-action="Index">
+                        <i class="bi bi-bag-check"></i> Quản lý đơn hàng
+                    </a>
+                </li>
                 <a class="nav-link" href="#"><i class="bi bi-people"></i> Quản lý khách hàng</a>
                 <a class="nav-link" href="#"><i class="bi bi-person-badge"></i> Quản lý nhân viên</a>
-                <a class="nav-link" href="#"><i class="bi bi-person-circle"></i> Quản lý tài khoản</a>
+                
             </nav>
 
             <div class="mt-auto">
-                <div class="menu-title">Đăng nhập hệ thống</div>
+                <div class="menu-title">Tài khoản</div>
                 <nav class="nav flex-column">
-                    <a class="nav-link" href="#"><i class="bi bi-box-arrow-in-right"></i> Tài khoản</a>
+                    <a class="nav-link text-danger" href="/Account/Logout">
+                        <i class="bi bi-box-arrow-right"></i> Đăng xuất
+                    </a>
                 </nav>
             </div>
         </aside>

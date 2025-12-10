@@ -12,7 +12,7 @@ namespace WebD_T.Areas.Admin.Models
         [Display(Name = "Tên sản phẩm")]
         [Required(ErrorMessage = "*")]
         [MaxLength(200, ErrorMessage = "Tối đa 200 kí tự")]
-        public string Name { get; set; } = string.Empty;   // ✅ fix CS8618
+        public string Name { get; set; } = string.Empty;  
 
         [Display(Name = "Mô tả")]
         public string? Description { get; set; }
@@ -46,10 +46,8 @@ namespace WebD_T.Areas.Admin.Models
 
     public class ProductFormAdmin : ProductAdmin
     {
-        // Id danh mục chọn trong dropdown
         public int? CategoryIdSelected { get; set; }
 
-        // List danh mục cho dropdown
         public List<SelectListItem>? ListCategory { get; set; }
     }
 }

@@ -99,11 +99,9 @@ namespace WebD_T.Areas.Admin.Controllers
                     return View(productAddNew);
                 }
 
-                // 4. Gán thêm các field còn lại
+                
                 productAddNew.CreatedAt = DateTime.Now;
-                // IsActive lấy từ checkbox trên form, không cần set lại nếu muốn giữ giá trị người dùng chọn
 
-                // 5. Upload hình
                 if (Img == null || Img.Length == 0)
                 {
                     productAddNew.ImageUrl = string.Empty;
@@ -114,7 +112,6 @@ namespace WebD_T.Areas.Admin.Controllers
                     productAddNew.ImageUrl = imageName;
                 }
 
-                // 6. Gọi DAL insert
                 bool isInserted = productDAL.AddNew(productAddNew);
 
                 if (isInserted)

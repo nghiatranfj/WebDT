@@ -38,7 +38,6 @@ namespace WebD_T.Areas.Admin.Controllers
         // GET: CategoryAdminController/Create 
         public ActionResult Create()
         {
-            // Có thể truyền model rỗng để View strongly-typed
             return View(new CategoryAdmin());
         }
 
@@ -51,7 +50,6 @@ namespace WebD_T.Areas.Admin.Controllers
             {
                 if (!ModelState.IsValid)
                 {
-                    // Model không hợp lệ -> quay lại form, hiển thị lỗi
                     return View(categoryNew);
                 }
 
@@ -96,7 +94,6 @@ namespace WebD_T.Areas.Admin.Controllers
             {
                 if (!ModelState.IsValid)
                 {
-                    // Model lỗi -> trả về lại form kèm lỗi
                     return View(categoryNew);
                 }
 
@@ -121,7 +118,6 @@ namespace WebD_T.Areas.Admin.Controllers
             {
                 Console.WriteLine("Update error: " + ex.Message);
                 TempData["ErrorMessage"] = ex.Message;
-                // Trả lại form với dữ liệu cũ để user không phải nhập lại
                 return View(categoryNew);
             }
         }

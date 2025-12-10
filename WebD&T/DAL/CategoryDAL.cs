@@ -8,7 +8,6 @@ namespace WebDT.DAL
     {
         private readonly DbConnect connect = new DbConnect();
 
-        // Lấy danh sách Category + số lượng sản phẩm trong từng Category
         public List<CategoryMenu> GetAllWithCount()
         {
             connect.openConnection();
