@@ -1,4 +1,4 @@
-﻿using Microsoft.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using WebDT.Database;
 using WebDT.Models;
 namespace WebDT.DAL
@@ -19,6 +19,7 @@ namespace WebDT.DAL
 
                 string query = @"SELECT 
                     p.id AS Id,
+                    p.category_id AS CategoryId,
                     p.category_id AS CategoryId,
                     p.name AS Name,
                     p.description AS Description,
@@ -53,6 +54,7 @@ namespace WebDT.DAL
                             Id = Convert.ToInt32(reader["Id"]),
                             CategoryId = Convert.ToInt32(reader["CategoryId"]),
                             Name = reader["Name"].ToString() ?? "",
+                            CategoryName = reader["CategoryName"].ToString() ?? "",
                             Description = reader["Description"].ToString() ?? "",
                             Price = Convert.ToInt32(reader["Price"]),
                             Stock_quantity = Convert.ToInt32(reader["Stock_quantity"]),
@@ -151,6 +153,7 @@ namespace WebDT.DAL
                             Id = Convert.ToInt32(reader["Id"]),
                             CategoryId = Convert.ToInt32(reader["CategoryId"]),
                             Name = reader["Name"].ToString() ?? "",
+                            CategoryName = reader["CategoryName"].ToString() ?? "",
                             Description = reader["Description"].ToString() ?? "",
                             Price = Convert.ToInt32(reader["Price"]),
                             Stock_quantity = Convert.ToInt32(reader["Stock_quantity"]),
@@ -202,6 +205,7 @@ namespace WebDT.DAL
                             Id = Convert.ToInt32(reader["Id"]),
                             CategoryId = Convert.ToInt32(reader["CategoryId"]),
                             Name = reader["Name"].ToString() ?? "",
+                            CategoryName = reader["CategoryName"].ToString() ?? "",
                             Description = reader["Description"].ToString() ?? "",
                             Price = Convert.ToInt32(reader["Price"]),
                             Stock_quantity = Convert.ToInt32(reader["Stock_quantity"]),
@@ -259,6 +263,7 @@ namespace WebDT.DAL
                             Id = Convert.ToInt32(reader["Id"]),
                             CategoryId = Convert.ToInt32(reader["CategoryId"]),
                             Name = reader["Name"].ToString() ?? "",
+                            CategoryName = reader["CategoryName"].ToString() ?? "",
                             Description = reader["Description"].ToString() ?? "",
                             Price = Convert.ToInt32(reader["Price"]),
                             Stock_quantity = Convert.ToInt32(reader["Stock_quantity"]),
@@ -318,6 +323,7 @@ namespace WebDT.DAL
                             Id = Convert.ToInt32(reader["Id"]),
                             CategoryId = Convert.ToInt32(reader["CategoryId"]),
                             Name = reader["Name"].ToString() ?? "",
+                            CategoryName = reader["CategoryName"].ToString() ?? "",
                             Description = reader["Description"].ToString() ?? "",
                             Price = Convert.ToInt32(reader["Price"]),
                             Stock_quantity = Convert.ToInt32(reader["Stock_quantity"]),
@@ -372,6 +378,7 @@ namespace WebDT.DAL
                             Id = Convert.ToInt32(reader["Id"]),
                             CategoryId = Convert.ToInt32(reader["CategoryId"]),
                             Name = reader["Name"].ToString() ?? "",
+                            CategoryName = reader["CategoryName"].ToString() ?? "",
                             Description = reader["Description"].ToString() ?? "",
                             Price = Convert.ToInt32(reader["Price"]),
                             Stock_quantity = Convert.ToInt32(reader["Stock_quantity"]),
@@ -456,6 +463,7 @@ namespace WebDT.DAL
                             Id = Convert.ToInt32(reader["Id"]),
                             CategoryId = Convert.ToInt32(reader["CategoryId"]),
                             Name = reader["Name"]?.ToString() ?? string.Empty,
+                            CategoryName = reader["CategoryName"]?.ToString() ?? string.Empty,
                             Description = reader["Description"]?.ToString() ?? string.Empty,
                             Price = Convert.ToInt32(reader["Price"]),
                             Stock_quantity = Convert.ToInt32(reader["Stock_quantity"]),
